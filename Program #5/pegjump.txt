@@ -1,0 +1,80 @@
+package student;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import javax.lang.model.element.Element;
+
+import pegJump.*;
+
+public class PegJump {
+
+	public static int numOfJumps = 0;
+	public static double solvePegJump(PegJumpPuzzle puzzle, ArrayList<Jump> jumpList) 
+	{	
+		
+		boolean pegs[] = new boolean[puzzle.numHoles()]; 
+		
+		int numberOfPositions = puzzle.numHoles(); //gets the number of positions in the puzzle
+		
+		for (int i = 0; i < numberOfPositions; i++) 
+		{  
+		pegs[i] = true;                     
+		}
+		
+        pegs[puzzle.getStartHole()] = false;    
+
+		recJump(pegs, jumpList, puzzle);
+
+		return numOfJumps; 
+	}	
+
+	private static int recJump(boolean[] pegs, ArrayList<Jump> jumpList, PegJumpPuzzle puzzle) 
+	{
+		Iterator<Jump> jitr = puzzle.jumpIterator();
+
+		while (jitr.hasNext()) 
+		{
+			Jump j = jitr.next();
+			
+			int from = j.getFrom();
+			int over = j.getOver();
+			int dest = j.getDest();
+			
+			if (pegs[from] && pegs[over] && !pegs[dest]) 
+			{				
+				jumpList.add(j);
+				
+				pegs[from] = false;   
+				pegs[over] = false;
+				pegs[dest] = true;
+				numOfJumps++;
+				
+				recJump(pegs, jumpList, puzzle);
+
+				int amtOfPegs = 0;
+				int index = 0; 
+				
+				for(boolean position: pegs) { //faster if we use a regular for loop but we found for clarification foreach loops work the best 
+					if (position == true) {
+						amtOfPegs++;
+					}
+					index++;
+				}
+				
+				if (amtOfPegs == 1) 
+				{
+					
+				} 
+				else 
+				{
+					pegs[from] = true;   
+					pegs[over] = true;
+					pegs[dest] = false;
+					
+					jumpList.remove(jumpList.size() - 1);
+				}
+			}
+		}
+		return numOfJumps;
+	}
+}
